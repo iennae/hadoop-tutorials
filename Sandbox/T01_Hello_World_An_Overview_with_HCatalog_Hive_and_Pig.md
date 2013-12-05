@@ -369,9 +369,8 @@ stock\_symbol="IBM" and store this in data bag `b`.
     processing functions-\>FILTER` template
 -   Replace `%VAR%` with `a` (hint: tab jumps you to the next
     field)
--   Replace `%COND%` with `stock\_symbol =='IBM'`  (note: single quotes are
+-   Replace `%COND%` with `stock_symbol == 'IBM';`  (note: single quotes are
     needed around IBM)
--   Type "`;`".
 
 The next line of code will look like:
 
