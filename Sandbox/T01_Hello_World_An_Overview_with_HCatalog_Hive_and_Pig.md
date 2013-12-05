@@ -369,9 +369,9 @@ stock\_symbol="IBM" and store this in data bag `b`.
     processing functions-\>FILTER` template
 -   Replace `%VAR%` with `a` (hint: tab jumps you to the next
     field)
--   Our `%COND% is "`stock\_symbol =='IBM'` " (note: single quotes are
+-   Replace `%COND%` with `stock\_symbol =='IBM'`  (note: single quotes are
     needed around IBM)
--   Type "`;`"
+-   Type "`;`".
 
 The next line of code will look like:
 
@@ -387,11 +387,11 @@ first example we will use the special GROUP ALL syntax. We will create a third d
 the organized set of records.
 
 
--   On the right hand side on Line 3 type "`c = `"
+-   On the right hand side on Line 3 type `c = `.
 -   Use the Pig Helper again by clicking on `Pig helper -\> Data processing functions-\>GROUP BY` template
--   The first `%VAR% is "`b`" and the second `%VAR%` is "`all`". 
+-   The first `%VAR%` is `b` and the second `%VAR%` is `all`. 
 -   Remove the "`BY`" in the line of code.
--   Type "`;`"
+-   Type `;`.
  
 
 The final line of code will look like:  
