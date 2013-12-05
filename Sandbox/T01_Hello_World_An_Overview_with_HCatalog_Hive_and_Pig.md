@@ -281,20 +281,18 @@ queries.
 
 ###<a name="pig"></a>Pig Basics Tutorial
 
-In this tutorial we create and run Pig scripts. On the left is a list of
-scripts that we have created. In the middle is an area for us to compose
-our scripts. We will also load the data from the table we have stored in
-HCatalog. We will then filter out the records for the stock symbol IBM.
-Once we have done that we will calculate the average of closing stock
-prices over this period.
+In this tutorial we will use our dataset to write a basic pig script. 
+This script will load the data from the table we have stored in
+HCatalog. It will filter out the records for the stock symbol IBM.
+It will calculate the average of closing stock prices over this period.
 
 The basic steps will be:
 
 -   Step 1: Create and name the script
 -   Step 2: Loading the data
 -   Step 3: Select all records starting with IBM
--   Step 4: iterate and average
--   Step 5: save the script and execute it
+-   Step 4: Iterate and average
+-   Step 5: Save the script and execute it
 
 Let's get started...
 
@@ -322,71 +320,90 @@ UI](./images/tutorial-1/PigUI.jpeg)](./images/tutorial-1/PigUI.jpeg)
 
     [![Image001-2](./images/tutorial-1/image001.2.jpg?raw=true)](./images/tutorial-1/image001.2.jpg?raw=true)
 
+-   Click "Save" and your script will now show up on the left bar.\
+
 ### Step 2: Loading the data
 
 Our first line in the script will load the table. We are going to use
 HCatalog because this allows us to share schema across tools and users
 within our Hadoop environment. HCatalog allows us to factor out schema
 and location information from our queries and scripts and centralize
-them in a common repository. Since it is in HCatalog we can use the
+them in a common repository. Since our data is in HCatalog we can use the
 HCatLoader() function. Pig makes it easy by allowing us to give the
 table a name or alias and not have to worry about allocating space and
 defining the structure. We just have to worry about how we are
 processing the table.
 
--   On the right hand side we can start adding our code at Line 1
--   We can use the Pig helper at the bottom of the screen to give us a
+-   On the right hand side we can start adding our code at Line 1.
+-   Type "`a = `" 
+-   Select the Pig helper at the bottom of the screen to give us a
     template for the line. Click on `Pig helper -\> HCatalog-\>load
     template`
 -   The entry `%TABLE%` is highlighted in red for us. Type the name of the
     table which is `nyse-stocks`.
--   Remember to add the `a = ` before the template. This saves the
-    results into `a`. Note the `= has to have a space before and after
-    it.
+-   Type "`;`"
 
 Our completed line of code will look like:
 
     a = LOAD 'nyse_stocks' using org.apache.hcatalog.pig.HCatLoader();
 
+This creates a data bag "`a`" that contains the collection of values.
 
 [![Line
 1](./images/tutorial-1/line1.jpeg)](./images/tutorial-1/line1.jpeg)
 
-So now we have our table loaded into Pig and we stored it "`a`"
+So now we have our table loaded into Pig and we stored it into data bag "`a`"
 
 ### Step 3: Select all records starting with IBM
 
 The next step is to select a subset of the records so that we just have
 the records for stock ticker of IBM. To do this in Pig we use the Filter
-operator. We tell Pig to Filter our table and keep all records where
-stock\_symbol="IBM" and store this in b. With this one simple statement
-Pig will look at each record in the table and filter out all the ones
-that do not meet our criteria. The group statement is important because
-it groups the records by one or more relations. In this case we just
-specified all rather than specify the exact relation we need.
+operator. The Filter operator iterates over a data bag and returns a new 
+data bag containing the elements that pass the conditional expression.
 
--   We can use Pig Help again by clicking on `Pig helper-\>Data
+We tell Pig to Filter our table and keep all records where
+stock\_symbol="IBM" and store this in data bag "`b`". 
+
+-   On the right hand side on Line 2 type "`b = `"
+-   Use the Pig Helper again by clicking on `Pig helper-\>Data
     processing functions-\>FILTER` template
--   We can replace `%VAR%` with "`a`" (hint: tab jumps you to the next
+-   Replace `%VAR%` with "`a`" (hint: tab jumps you to the next
     field)
 -   Our `%COND% is "`stock\_symbol =='IBM'` " (note: single quotes are
-    needed around IBM and don't forget the trailing semi-colon)
--   `Pig helper -\> Data processing functions-\>GROUP BY` template
--   The first `%VAR% is "`b`" and the second `%VAR%` is "`all`". You will need to
-    correct an irregularity in the Pig syntax here. Remove the "`BY`" in
-    the line of code.
--   Again add the trailing semi-colon to the code.
+    needed around IBM)
+-   Type "`;`"
 
-So the final code will look like:
-
+The next line of code will look like:
 
     b = filter a by stock_symbol == 'IBM';
+
+With this one simple statement Pig will look at each record in the table and filter out all the ones
+that do not meet our criteria.
+
+### Step 4: Group the records
+
+GROUP BY will organize the set of records based on the field identified as the common field. In our 
+first example we will use the special GROUP ALL syntax. We will create a third data bag "`c`" to contain
+the organized set of records.
+
+
+-   On the right hand side on Line 3 type "`c = `"
+-   Use the Pig Helper again by clicking on `Pig helper -\> Data processing functions-\>GROUP BY` template
+-   The first `%VAR% is "`b`" and the second `%VAR%` is "`all`". 
+-   Remove the "`BY`" in the line of code.
+-   Type "`;`"
+ 
+
+The final line of code will look like:  
+
     c = group b all;
                     
 [![Line
 3](./images/tutorial-1/line3.jpeg)](./images/tutorial-1/line3.jpeg)
 
-Now we have extracted all the records with IBM as the stock\_symbol.
+-   Click "Save" 
+
+Now our script will extract all the records with IBM as the stock\_symbol from our table.
 
 ### Step 4: Iterate and Average
 
