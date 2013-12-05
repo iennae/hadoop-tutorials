@@ -335,24 +335,24 @@ defining the structure. We just have to worry about how we are
 processing the table.
 
 -   On the right hand side we can start adding our code at Line 1.
--   Type "`a = `" 
+-   Type `a = `
 -   Select the Pig helper at the bottom of the screen to give us a
     template for the line. Click on `Pig helper -\> HCatalog-\>load
     template`
 -   The entry `%TABLE%` is highlighted in red for us. Type the name of the
     table which is `nyse-stocks`.
--   Type "`;`"
+-   Type `;`
 
 Our completed line of code will look like:
 
     a = LOAD 'nyse_stocks' using org.apache.hcatalog.pig.HCatLoader();
 
-This creates a data bag "`a`" that contains the collection of values.
+This creates a data bag `a` that contains the collection of values.
 
 [![Line
 1](./images/tutorial-1/line1.jpeg)](./images/tutorial-1/line1.jpeg)
 
-So now we have our table loaded into Pig and we stored it into data bag "`a`"
+So now we have our table loaded into Pig and we stored it into data bag `a`
 
 ### Step 3: Select all records starting with IBM
 
@@ -362,12 +362,12 @@ operator. The Filter operator iterates over a data bag and returns a new
 data bag containing the elements that pass the conditional expression.
 
 We tell Pig to Filter our table and keep all records where
-stock\_symbol="IBM" and store this in data bag "`b`". 
+stock\_symbol="IBM" and store this in data bag `b`. 
 
--   On the right hand side on Line 2 type "`b = `"
+-   On the right hand side on Line 2 type `b = `
 -   Use the Pig Helper again by clicking on `Pig helper-\>Data
     processing functions-\>FILTER` template
--   Replace `%VAR%` with "`a`" (hint: tab jumps you to the next
+-   Replace `%VAR%` with `a` (hint: tab jumps you to the next
     field)
 -   Our `%COND% is "`stock\_symbol =='IBM'` " (note: single quotes are
     needed around IBM)
@@ -405,46 +405,55 @@ The final line of code will look like:
 
 Now our script will extract all the records with IBM as the stock\_symbol from our table.
 
-### Step 4: Iterate and Average
+### Step 5: Iterate and Average
 
-Now that we have the right set of records we can iterate through them
-and create the average. We use the "foreach" operator on the grouped
-data to iterate through all the records. The AVG() function creates the
-average of the stock\_volume field. To wind it up we just print out the
-results which will be a single floating point number. If our results
-would be used for a future job we can save it back into a table.
+Now that we have the subset of records that match our condition, we can iterate through them
+and calculate the average.
 
+In this section we will learn the `foreach` operator. Foreach allows us to iterate across
+the columns of a data bag and transform the data.
+
+We will also use the `AVG()` function which will calculate the average of the numeric values of a single column.
+In order to do a global average, we must have grouped the data using `GROUP ALL`.
+
+-   On the right hand side on Line 4 type `d = `
 -  `Pig helper -\>Data Processing functions-\>FOREACH` template will get
     us the code
--   Our first `%VAR%` is `c` and the second `%VAR%` is "`AVG(b.stock\_volume);`"
--   We add the last line with `Pig helper-\>I/O-\>DUMP` template and
-    replace `%VAR%` with "`d`".
+-   Replace the first `%VAR%` with `c`.
+-   Replace the second `%VAR%` with "`AVG(b.stock\_volume);`"
 
-Our last two lines of the script will look like:
+
+Line 4 will look like:
 
     d = foreach c generate AVG(b.stock_volume);
+
+-   On the right hand side on Line 5 use the Pig helper `Pig helper-\>I/O-\>DUMP` template and
+    replace `%VAR%` with "`d`".
+
+Our final line of the script:
+
     dump d;
                     
 [![Line
 5](./images/tutorial-1/line5.jpeg)](./images/tutorial-1/line5.jpeg)
 
-So the variable "`d`" will contain the average volume of IBM stock when this
+So the variable "`d`" will contain the average stock volume of IBM stock when this
 line is executed.
 
-### Step 5: Save the script and Execute it
+### Step 6: Save the script and Execute it
 
-We can save our completed script using the Save button at the bottom and
-then we can Execute it. This will create a MapReduce job(s) and after it
+Save the completed script using the Save button at the bottom and
+Execute it. This will create a MapReduce job(s) and after it
 runs we will get our results. At the bottom there will be a progress bar
 that shows the job status.
 
--   At the bottom we click on the Save button again
--   Then we click on the Execute button to run the script
--   Below the Execute button is a progress bar that will show you how
+-   Click on the Save button.
+-   Click on the Execute button to run the script.
+-   Watch the progress bar that will show you how
     things are running.
--   When the job completes you will see the results in the green box.
--   Click on the Logs link to see what happened when your script ran.he
-    average of stock\_volume This is where you will see any error
+-   When the job completes you will see the results of the average of stock_volume in the green box.
+-   Click on the Logs link to see what happened when your script ran. 
+    This is where you will see any error
     messages. The log may scroll below the edge of your window so you
     may have to scroll down.
 
@@ -453,20 +462,19 @@ that shows the job status.
 ### Summary
 
 Now we have a complete script that computes the average volume of IBM
-stock. You can download the results by clicking on the green download
+stock from our data set. You can also download the results by clicking on the green download
 icon above the green box.
 
 [![Answer](./images/tutorial-1/answer.jpeg)](./images/tutorial-1/answer.jpeg)
 
-If you look at what our script has done, you see in Line 5 we:
+This script:
 
--   Pulled in the data from our table using HCatalog, we took advantage
-    that HCatalog provided us with location and schema information, if
-    that needs to change in the future we would not have to rewrite our
+-   Pulled in the data from our table using HCatalog. We took advantage
+    that HCatalog provided us with location and schema information. If
+    that changes in the future we will not have to rewrite our
     script.
--   Pig then went through all the rows in the table and discarded the
-    ones where the stock\_symbol field is not IBM
--   Then an index was built for the remaining records
--   The average of stock\_volume was calculated on the records
+-   Filtered all the rows in the table and discarded the
+    ones where the stock\_symbol field is not IBM.
+-   Grouped the remaining rows.
+-   Calculated the average of stock\_volume on the records.
 
-We did it with 5 lines of Pig script code!
